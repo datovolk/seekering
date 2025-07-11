@@ -4,6 +4,9 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+# Unregister default registration to avoid AlreadyRegistered exception
+admin.site.unregister(User)
+
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -22,6 +25,6 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'name', 'password1', 'password2', 'is_staff', 'is_active')}
+            'fields': ('email', 'name', 'password1', 'password2', 'is_staff', 'is_active')},
         ),
     )
