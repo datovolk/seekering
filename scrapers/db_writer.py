@@ -6,7 +6,7 @@ def insert_jobs_to_db(json_filename, table_name, log_callback=print):
         data = json.load(f)
 
     conn = sqlite3.connect("main.db")
-    rows = client.execute("sql", [parametres])
+    cursor = conn.cursor()
 
     cursor.execute(f'''
         CREATE TABLE IF NOT EXISTS {table_name} (

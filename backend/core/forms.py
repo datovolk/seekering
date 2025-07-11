@@ -28,8 +28,7 @@ class CustomUserCreationForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         User = get_user_model()
-        rows = client.execute("SELECT 1 FROM core_user WHERE email = ? LIMIT 1", [email])
-	exists = len(rows) > 0
+        if User.objects.filter(email=email).exists():
             raise forms.ValidationError('ამ ელ-ფოსტით უკვე დარეგისტრირებულია მომხმარებელი.')
         return email
 
@@ -75,8 +74,7 @@ class CustomLoginForm(AuthenticationForm):
 
         if email and password:
             try:
-                rows = client.execute("SELECT * FROM core_user WHERE email = ? LIMIT 1", [email])
-		user = rows[0] if rows else None
+                user = get_user_model().objects.get(email=email)
             except get_user_model().DoesNotExist:
                 raise self.get_invalid_login_error()
 
