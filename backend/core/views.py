@@ -1,36 +1,28 @@
-from django.forms.utils import ErrorList
 from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model, login
-from .forms import CustomUserCreationForm, CustomLoginForm, ProfileUpdateForm
-from .models import Job, Interest, HrGe, JobsGe, MyJobsGe
-from django.contrib.auth.tokens import default_token_generator
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.urls import reverse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-from django.contrib.auth import logout
-from django.contrib import messages
 from urllib.parse import urlparse
-from django.db.models import Q
-from django.core.paginator import Paginator
-import random
+import hashlib
 
+from .services.turso_client import run_turso_query
 
-User = get_user_model()
-
-# categories
-
-categories_map = {
-    'გაყიდვები': ['გაყიდვები', 'ბიზნესი', 'ბიზნეს', 'ფინანსისტი', 'ფინანსური', 'ფინანსები' 'მენეჯერი', 'კონსულტანტი'],
-    'UI/UX დიზაინი':  ['ui', 'ux', 'დიზაინერი', '3d'],
-    'პროგრამირება': ['python', 'პითონი', 'დეველოპერი', 'მონაცემთა', 'ბაზები', '.net', 'java'],
-    'არქიტექტურა': ['არქიტექტორი']
-    
-}
+def hash_password(password):
+    return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
 def categorize_job(title):
+    categories_map = {
+        'გაყიდვები': ['გაყიდვები', 'ბიზნესი', 'მენეჯერი', 'კონსულტანტი'],
+        'UI/UX დიზაინი': ['ui', 'ux', 'დიზაინერი', '3d'],
+        'პროგრამირება': ['python', 'დეველოპერი', '.net', 'java'],
+        'არქიტექტურა': ['არქიტექტორი']
+    }
     text = (title or "").lower()
     for category, keywords in categories_map.items():
         if any(keyword.lower() in text for keyword in keywords):
@@ -38,229 +30,135 @@ def categorize_job(title):
     return "სხვა"
 
 def job_list(request):
-    user = request.user
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('auth_view')
 
-    if not user.is_authenticated:
-        return redirect('authorization')
+    user_interest_rows = run_turso_query(
+        "SELECT i.name FROM interest i JOIN user_interest ui ON ui.interest_id = i.id WHERE ui.user_id = ?",
+        [user_id]
+    )
+    user_interests = [row[0] for row in user_interest_rows]
 
-    query = request.GET.get('q', '').strip().lower()
-
-    hr_jobs = client.execute("SELECT * FROM core_hrge")
-    jobs_ge = client.execute("SELECT * FROM core_jobsge")
-    myjobs_ge = client.execute("SELECT * FROM core_myjobsge")
-
-    icon_map = {
-        "hr.ge": "images/src_website_logos/hrge_logo.svg",
-        "jobs.ge": "images/src_website_logos/jobsge_logo.png",
-        "myjobs.ge": "images/src_website_logos/myjobsge_logo.svg",
-    }
+    hr_jobs = run_turso_query("SELECT * FROM hr_ge")
+    jobs_ge = run_turso_query("SELECT * FROM jobs_ge")
+    myjobs_ge = run_turso_query("SELECT * FROM myjobs_ge")
 
     all_jobs = hr_jobs + jobs_ge + myjobs_ge
 
-    user_interests = [i.name for i in user.interests.all()]
     filtered_jobs = []
-
     for job in all_jobs:
-        domain = urlparse(job.position_url).netloc.lower()
-
-        if domain.startswith("www."):
-            domain = domain[4:]
-
-        source_site = f'https://{domain}'
-        source_icon = icon_map.get(domain)
-
-        setattr(job, 'source_site', source_site)
-        setattr(job, 'source_icon', source_icon)
-
-        title = getattr(job, 'title', '') or getattr(job, 'position', '')
+        title = job.get('position', '') or job.get('title', '')
         category = categorize_job(title)
-        setattr(job, 'category', category)
-
         if category in user_interests:
-            if query:
-                if query in title.lower():
-                    filtered_jobs.append(job)
-            else:
-                filtered_jobs.append(job)
+            filtered_jobs.append(job)
 
-    dated = [job for job in filtered_jobs if job.published_date is not None]
-    undated = [job for job in filtered_jobs if job.published_date is None]
-
-    dated.sort(key=lambda job: job.published_date, reverse=True)
-
-    filtered_jobs = dated + undated
-
-    paginator = Paginator(filtered_jobs, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    return render(request, 'core/index.html', {
-        'jobs': page_obj.object_list,
-        'page_obj': page_obj,
-    })
-
-
-
+    context = {
+        'jobs': filtered_jobs,
+    }
+    return render(request, 'core/index.html', context)
 
 def auth_view(request):
-    form_type = request.GET.get('form_type', 'login') if request.method == 'GET' else request.POST.get('form_type', 'register')
-    user = request.user
-    register_form = CustomUserCreationForm()
-    login_form = CustomLoginForm()
-
     if request.method == 'POST':
-        
-        if form_type == "register":
-            register_form = CustomUserCreationForm(request.POST)
-            if register_form.is_valid():
-                data = register_form.cleaned_data
-		client.execute(
-   			"INSERT INTO core_user (field1, field2, ...) VALUES (?, ?, ...)",
-    			[data['field1'], data['field2'], ...]
-		)
-                user.username = register_form.cleaned_data['email']
-                user.email = register_form.cleaned_data['email']
-                user.first_name = register_form.cleaned_data['name']
-                user.set_password(register_form.cleaned_data['password1'])
-                user.is_active = False
-                user.client.execute()
-                send_verification_email(request, user)
-                
-                messages.success(request, "გთხოვთ გადაამოწმოთ თქვენი ელ.ფოსტა და დაადასტუროთ ანგარიში.")
-                return redirect('/authorization?form_type=login')
-            else:
-                request.session['register_errors'] = register_form.errors.get_json_data()
+        form_type = request.POST.get('form_type')
+
+        if form_type == 'register':
+            email = request.POST.get('email')
+            name = request.POST.get('name')
+            password = request.POST.get('password1')
+
+            existing = run_turso_query("SELECT id FROM user WHERE email = ?", [email])
+            if existing:
+                messages.error(request, "Email уже зарегистрирован")
+                return redirect('auth_view')
+
+            password_hash = hash_password(password)
+            run_turso_query(
+                "INSERT INTO user (email, name, password_hash, is_active) VALUES (?, ?, ?, ?)",
+                [email, name, password_hash, 0]
+            )
+            user_row = run_turso_query("SELECT id FROM user WHERE email = ?", [email])
+            user_id = user_row[0][0]
+            request.session['user_id'] = user_id
+            send_verification_email(request, user_id, email, name)
+            messages.success(request, "Проверьте почту для подтверждения аккаунта")
+            return redirect('auth_view')
 
         elif form_type == 'login':
-            login_form = CustomLoginForm(request, data=request.POST)
-            if login_form.is_valid():
-                user = login_form.get_user()
-                login(request, user)
-                if not hasattr(user, 'interests') or user.interests.count() == 0:
-                    return redirect('interests')
-                return redirect('home')
-            else:
-                request.session['login_errors'] = login_form.errors.get_json_data()
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            password_hash = hash_password(password)
+            user_row = run_turso_query(
+                "SELECT id, is_active FROM user WHERE email = ? AND password_hash = ?",
+                [email, password_hash]
+            )
+            if not user_row:
+                messages.error(request, "Неверные учетные данные")
+                return redirect('auth_view')
+            user_id, is_active = user_row[0]
+            if not is_active:
+                messages.error(request, "Аккаунт не активирован")
+                return redirect('auth_view')
+            request.session['user_id'] = user_id
+            return redirect('job_list')
 
-        return redirect(f'/authorization?form_type={form_type}')
+    return render(request, 'core/auth.html')
 
-    if form_type == "register":
-        register_form = CustomUserCreationForm()
-        if 'register_errors' in request.session:
-            errors = request.session.pop('register_errors')
-            for field, field_errors in errors.items():
-                register_form.errors.setdefault(field, ErrorList()).extend([e['message'] for e in field_errors])
-    else:
-        login_form = CustomLoginForm()
-        if 'login_errors' in request.session:
-            errors = request.session.pop('login_errors')
-            for field, field_errors in errors.items():
-                login_form.errors.setdefault(field, ErrorList()).extend([e['message'] for e in field_errors])
-
-    if user.is_authenticated:
-        if not hasattr(user, 'interests') or user.interests.count() == 0:
-            return redirect('interests')
-        else:
-            return redirect('home')
-    else:
-        return render(request, 'core/register.html', {
-            'register_form': register_form,
-            'login_form': login_form,
-            'form_type': form_type,
-        })
-
-def send_verification_email(request, user):
-    token = default_token_generator.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
+def send_verification_email(request, user_id, email, name):
+    token = default_token_generator.make_token(user_id)
+    uid = urlsafe_base64_encode(force_bytes(user_id))
     domain = get_current_site(request).domain
-    link = reverse('activate-account', kwargs={'uidb64': uid, 'token': token})
+    link = reverse('activate_account', kwargs={'uidb64': uid, 'token': token})
     activate_url = f'http://{domain}{link}'
-
-    message = render_to_string('core/registration/verify_email.html', {
-        'user': user,
+    message = render_to_string('core/verify_email.html', {
+        'name': name,
         'activate_url': activate_url,
     })
-
     send_mail(
-        'ანგარიშის აქტივაცია',
+        'Активация аккаунта',
         message,
         None,
-        [user.email],
+        [email],
         fail_silently=False,
     )
-
 
 def activate_account(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        rows = client.execute("SELECT * FROM core_user WHERE id = ? LIMIT 1", [uid])
-	user = rows[0] if rows else None
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-
-    if user and default_token_generator.check_token(user, token):
-        user.is_active = True
-        client.execute(
-    		"UPDATE core_user SET field1 = ?, field2 = ? WHERE id = ?",
-		[value1, value2, uid]
-	)
-        login(request, user)  
-        return redirect('interests')
-    else:
-        return render(request, 'core/registration/verify_failed.html')
-
+    except:
+        uid = None
+    if not uid:
+        return render(request, 'core/verify_failed.html')
+    user_row = run_turso_query("SELECT id FROM user WHERE id = ?", [uid])
+    if not user_row:
+        return render(request, 'core/verify_failed.html')
+    if default_token_generator.check_token(uid, token):
+        run_turso_query("UPDATE user SET is_active = 1 WHERE id = ?", [uid])
+        request.session['user_id'] = int(uid)
+        return redirect('job_list')
+    return render(request, 'core/verify_failed.html')
 
 def interests_view(request):
-
-    if not request.user.is_authenticated:
-        return redirect('authorization')
-    
-    if hasattr(request.user, 'interests') and request.user.interests.exists():
-        return redirect('account')
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('auth_view')
 
     if request.method == 'POST':
         selected = request.POST.getlist('interests')
         if len(selected) == 3:
-            request.user.interests.set(selected)
-            return redirect('home')
+            run_turso_query("DELETE FROM user_interest WHERE user_id = ?", [user_id])
+            for interest_id in selected:
+                run_turso_query(
+                    "INSERT INTO user_interest (user_id, interest_id) VALUES (?, ?)",
+                    [user_id, interest_id]
+                )
+            return redirect('job_list')
         else:
-            error = "გთხოვთ აირჩიოთ ზუსტად 3 ინტერესის სფერო."
-    else:
-        error = None
+            messages.error(request, "Выберите ровно 3 интереса")
 
-    interests = client.execute("SELECT * FROM core_interest")
-    user = request.user
-    first_name = request.user.name.split(' ')[0]
-
-    return render(request, 'core/interests.html', {
-        'name': first_name,
-        'interests': interests,
-        'error': error
-    })
-
-
-def account_view(request):
-    if not request.user.is_authenticated:
-        return redirect('authorization')
-
-    user = request.user
-    interests = user.interests.all() if hasattr(user, 'interests') else None
-
-    form = ProfileUpdateForm(request.POST or None, request.FILES or None, instance=user)
-
-    if request.method == 'POST' and form.is_valid():
-        client.execute()
-        return redirect('account')
-
-    return render(request, 'core/account.html', {
-        'user': user,
-        'interests': interests,
-        'form': form,
-    })
-
-
+    interests = run_turso_query("SELECT id, name FROM interest")
+    return render(request, 'core/interests.html', {'interests': interests})
 
 def logout_view(request):
-    if request.method == 'POST':
-        logout(request)
-    return redirect('authorization')
+    request.session.flush()
+    return redirect('auth_view')
