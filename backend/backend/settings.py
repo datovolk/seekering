@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+import sqlite3
+from libsql_client import create_client
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -83,9 +85,15 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / '../db/main.db',
+        'NAME': 'file:remote.db?mode=rw&tls=1',
     }
 }
+
+# Turso connection (libSQL)
+sqlite3.connect = lambda *args, **kwargs: create_client(
+    url="https://sqld-davitjibladze.aws-eu-west-1.turso.io",        
+    auth_token="eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NTIxMzA2OTQsImlkIjoiZTM2Y2RmMmItOWQzZS00MDkxLThkMjAtZTVkNWQwYzllNDJkIiwicmlkIjoiMjE5NDUzMzktYzE2Ny00Y2U2LWI3NzktNGQ3ZjFiYjIyZWQwIn0._g-BofzEf9MjGZ3-rwY2D5pKLBDT3mMeKzvhU8j1EvFv-CclVmNmSjD5oKUy85lXxnLNTIS6vuk0DvujqgHmBg"                  # замените на свой токен
+).sync()
 
 
 # Password validation
