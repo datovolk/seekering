@@ -38,7 +38,14 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
+	client.execute(
+ 		"INSERT INTO core_user (field1, field2, ...) VALUES (?, ?, ...)",
+		[value1, value2, ...]
+	)
+	client.execute(
+		"UPDATE core_user SET field1 = ?, field2 = ? WHERE id = ?",
+		[value1, value2, user_id]
+	)
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
@@ -81,7 +88,14 @@ class Interest(models.Model):
                 
             }
             self.icon_name = name_map.get(self.name, "help_outline")
-        super().save(*args, **kwargs)
+        client.execute(
+ 		"INSERT INTO core_user (field1, field2, ...) VALUES (?, ?, ...)",
+		[value1, value2, ...]
+	)
+	client.execute(
+		"UPDATE core_user SET field1 = ?, field2 = ? WHERE id = ?",
+		[value1, value2, user_id]
+	)
 
     def __str__(self):
         return self.name

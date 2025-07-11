@@ -45,9 +45,9 @@ def job_list(request):
 
     query = request.GET.get('q', '').strip().lower()
 
-    hr_jobs = list(HrGe.objects.all())
-    jobs_ge = list(JobsGe.objects.all())
-    myjobs_ge = list(MyJobsGe.objects.all())
+    hr_jobs = client.execute("SELECT * FROM core_hrge")
+    jobs_ge = client.execute("SELECT * FROM core_jobsge")
+    myjobs_ge = client.execute("SELECT * FROM core_myjobsge")
 
     icon_map = {
         "hr.ge": "images/src_website_logos/hrge_logo.svg",
@@ -113,13 +113,17 @@ def auth_view(request):
         if form_type == "register":
             register_form = CustomUserCreationForm(request.POST)
             if register_form.is_valid():
-                user = register_form.save(commit=False)
+                data = register_form.cleaned_data
+		client.execute(
+   			"INSERT INTO core_user (field1, field2, ...) VALUES (?, ?, ...)",
+    			[data['field1'], data['field2'], ...]
+		)
                 user.username = register_form.cleaned_data['email']
                 user.email = register_form.cleaned_data['email']
                 user.first_name = register_form.cleaned_data['name']
                 user.set_password(register_form.cleaned_data['password1'])
                 user.is_active = False
-                user.save()
+                user.client.execute()
                 send_verification_email(request, user)
                 
                 messages.success(request, "გთხოვთ გადაამოწმოთ თქვენი ელ.ფოსტა და დაადასტუროთ ანგარიში.")
@@ -189,13 +193,17 @@ def send_verification_email(request, user):
 def activate_account(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
+        rows = client.execute("SELECT * FROM core_user WHERE id = ? LIMIT 1", [uid])
+	user = rows[0] if rows else None
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
     if user and default_token_generator.check_token(user, token):
         user.is_active = True
-        user.save()
+        client.execute(
+    		"UPDATE core_user SET field1 = ?, field2 = ? WHERE id = ?",
+		[value1, value2, uid]
+	)
         login(request, user)  
         return redirect('interests')
     else:
@@ -220,7 +228,7 @@ def interests_view(request):
     else:
         error = None
 
-    interests = Interest.objects.all()
+    interests = client.execute("SELECT * FROM core_interest")
     user = request.user
     first_name = request.user.name.split(' ')[0]
 
@@ -241,7 +249,7 @@ def account_view(request):
     form = ProfileUpdateForm(request.POST or None, request.FILES or None, instance=user)
 
     if request.method == 'POST' and form.is_valid():
-        form.save()
+        client.execute()
         return redirect('account')
 
     return render(request, 'core/account.html', {
