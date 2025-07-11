@@ -1,0 +1,1125 @@
+
+/* fonts */
+@font-face {
+    font-family: 'Contractica-Black';
+    src: url('../fonts/contractica/TBCContractica-Black.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Contractica-Book';
+    src: url('../fonts/contractica/TBCContractica-Book.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Contractica';
+    src: url('../fonts/contractica/TBCContractica-Bold.ttf') format('truetype');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Contractica';
+    src: url('../fonts/contractica/TBCContractica-Light.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Contractica-CAPS';
+    src: url('../fonts/contractica/TBCContracticaCAPS-Bold.ttf') format('truetype');
+    font-weight: 400;
+}
+
+body {
+    font-family: 'Contractica-Book';
+    margin: 0;
+}
+
+/*global*/
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    list-style: none;
+}
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    color: #008abd!important;
+    transition: all 0.3s ease;
+}
+
+
+h1, h2, h3, h4 {
+    margin: 0;
+    padding: 0
+}
+
+/*base styles*/
+
+.bold-green {
+    color: #008abd;
+    font-family: Contractica-CAPS;
+}
+
+.error-message {
+    text-align: left;
+    font-weight: bold;
+    color: red;
+}
+
+.success-message {
+    text-align: left;
+    font-weight: bold;
+    color: #008abd
+}
+
+/*header*/
+
+.header{
+    background-color: #fff;
+    box-shadow:  0 5px 6px rgb(0 0 0 / 9%);
+}
+
+.header_inner {
+    max-width: 1330px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Contractica-Book';
+    font-weight: 700;
+    padding: 25px;
+}
+
+.header_inner--centered {
+    display: block;
+    text-align: center;
+    margin: 0;
+    max-width: none;
+}    
+
+.header .logo {
+    display: block;
+}
+
+.header .logo img {
+    width: 150px;
+    transform: translateY(7px);
+}
+
+.nav_list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav_list_item {
+    display: inline-block;
+    font-size: 18px;
+}
+
+.nav_list_item:last-child {
+    margin-right: 0;
+}
+
+.nav_list_item a {
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+}
+
+
+/*main*/
+
+.main_inner {
+    max-width: 1330px;
+    margin: 0 auto;
+}
+
+.search-form {
+    margin: 55px auto 0;
+    position: relative;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-form-input {
+    padding: 15px;
+    border-radius: 20px;
+    width: 100%;
+    font-size: 21px;
+    font-family: 'Contractica-Book';
+    border: solid #008bbd75 3px;
+    transition: border 0.2s ease-in-out;
+}
+
+.search-form-input:focus-visible {
+    border-color: #008abd!important; /* or your accent color */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.search-form-btn {
+    position: absolute;
+    border-radius: 100%;
+    cursor: pointer;
+    color: #fff;
+    width: 35px;
+    height: 35px;
+    background-color: #008abd;
+    border: solid #008abd 1px;
+    text-align: center;
+    right: 10px;
+    top: 12px;
+}
+
+.search-form-btn .material-symbols-outlined{
+    font-size: 22px!important;
+}
+
+.jobs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.job-row {
+    display: flex;
+    align-items: center;
+    border: solid rgba(0, 138, 189, 0.25) 2px;
+    border-top: none;
+}
+
+.job-row--jobs-inner {
+    display: flex;
+    align-items: center;
+}
+
+.job-header {
+    font-family: 'Contractica-Book';
+    background: #008abd;
+    color: #fff;
+    border-radius: 20px 20px 0 0;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 15px 10px;
+}
+
+.job-col {
+    overflow-wrap: break-word;
+    text-align: left;
+    padding: 0 15px;
+}
+
+.job-col.job-col--jobs.position {
+    font-size: 17px;
+    font-family: 'Contractica-CAPS';
+}
+
+.job-col.site     { flex: 0 0 10%; min-width: 70px; }
+.job-col.position  { flex: 2.2; min-width: 120px; }
+.job-col.company   { flex: 1; min-width: 100px; }
+.job-col.published { flex: 1; min-width: 80px; }
+.job-col.end       { flex: 1; min-width: 80px;}
+.job-col.category  { flex: 1; min-width: 100px; }
+
+
+.job-row--jobs {
+    color: #000;
+    height: 150px;
+}
+
+.job-row--jobs:last-child {
+    border-radius: 0 0 20px 20px;
+
+}
+
+.job-col--jobs.company, .job-col--jobs.category{
+    font-weight: bold;
+}
+
+.job-row--jobs:hover {
+    background: rgba(0, 138, 189, 0.1);
+}
+
+.job-col.site img {
+    width: 100px;
+    height: auto;
+}
+
+.job_list_item-btn {
+    font-size: 12px!important;
+    padding: 0 10px!important;
+    margin: 0 auto;
+}
+
+.pagination {
+    margin: 50px 0 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination .page-link {
+    margin: 0 10px;
+    color: #000;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+
+}
+
+.pagination .current {
+    background: #008abd;
+    color: #fff;
+}
+
+.pagination .page-arrow {
+    color: #000;
+}
+
+/* authorization */
+
+.auth-main {
+    background-image: url('../images/2saturated.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: calc(100vh - 91.66px);
+}
+
+
+
+.auth {
+    display: flex;
+    justify-content: space-between;
+    padding: 85px 40px;
+}
+
+.auth_content {
+    color: #fff;
+}
+
+.auth_content-title {
+    font-family: 'Contractica-CAPS';
+    font-size: 4em;
+    line-height: 90px;
+
+}
+
+.auth_content-subtext {
+    font-size: 21px;
+}
+
+.auth_form {
+    background: #fff;
+    padding: 35px 50px;
+    border-radius: 40px;
+    text-align: center;
+    max-width: 500px;
+}
+
+.auth_form-title {
+    font-family: 'Contractica';
+    font-size: 25px;
+    margin-bottom: 20px;
+}
+
+
+.auth_form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.auth_form-group-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.auth_form-group .material-symbols-outlined {
+    font-size: 30px;
+}
+
+.auth_form-input {
+    display: block;
+    position: relative;
+    width: 500px;
+    height: 60px;
+    margin: 10px 0 10px 15px;
+    border-radius: 50px;
+    padding: 5px 15px;
+    background-color: #FAFAFA;
+    border: 2px solid #DDDDDD;
+    box-shadow: none;
+    outline: none;
+    font-family: 'Contractica-Book';
+    text-indent: 10px;
+    font-size: 16px;
+}
+
+.auth_form-input:focus {
+    transition: all 0.6s ease;
+    border-color: #008abd;
+}
+
+.auth_form-input:focus  .material-symbols-outlined{
+    color: #008abd;
+}
+
+.auth_form-input::placeholder {
+    text-indent: 10px;
+}
+
+.auth_form-btn {
+    margin-top: 15px;
+}
+
+.auth_form-btn--link {
+    background: none;
+    border: none;
+    color: #a3a3a3;
+    font-size: 16px;
+    font-family: 'Contractica-CAPS';
+    cursor: pointer;
+    border-bottom: solid 1px #a3a3a3;
+    padding: 0;
+}
+
+.auth_form-btn--link:hover {
+    transition: all 0.3s ease;
+    color: #008abd;
+    border-color: #008abd;
+}
+
+
+
+.auth_form-switch {
+    text-align: right;
+}
+
+/*interests*/
+
+.body--interests {
+    height: 100vh;
+    background-image: url("../images/2saturated.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.body--interests header{
+    display: none;
+}
+
+/*header*/
+
+.header--interests{
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    max-width: 456px;
+    background: #fff;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.logo--interests {
+    display: block;
+    max-width: 300px;
+    margin: 0 auto 100px;
+}
+
+.header--interests_inner {
+    width: 100%;
+}
+
+.arrow-dec {
+    position: absolute;
+    top: calc(50% - 150px);
+    right: -173px;
+    display: block;
+    width: 300px;
+    height: 300px;
+    z-index: -1;
+}
+
+/*content*/
+
+.content--interests {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 228px);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 1000px;
+}
+
+.content--interests_title {
+    font-family: Contractica-CAPS;
+    font-size: 35px;
+}
+
+.content--interests-top {
+    display: none;
+    color: #fff;
+}
+
+.content--interests_subtitle {
+    margin-top: 25px;
+    line-height: 35px;
+}
+
+.content--interests_fields-form {
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+}
+
+.content--interests_grid {
+    max-width: 1000px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: space-around;
+}
+
+.content--interests_grid-option {
+    display: flex;
+    width: 300px;
+    height: 300px;
+    flex-direction: column;
+    justify-content: center;
+    border: 5px solid transparent;
+    box-sizing: border-box;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+    font-size: 21px;
+    text-align: center;
+    padding: 10px;
+    transition: border-color 0.2s, background-color 0.2s;
+    position: relative;
+    border-radius: 25px;
+    font-family: Contractica-CAPS;
+}
+
+.content--interests_grid-option input[type="checkbox"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.content--interests-grid-option-text {
+    z-index: 10;
+}
+
+.interest-icon {
+    display: block!important;
+    font-size: 150px!important;
+    opacity: 0.2;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.content--interests_grid-option:hover {
+    border: 10px solid rgba(0, 138, 189, 0.5);
+}
+
+.content--interests_grid-option:hover .interest-icon {
+    opacity: 1;
+    color: rgba(0, 138, 189, 0.5);
+}
+
+.content--interests_grid-option.selected{
+    border: 10px solid #008abd;
+}
+
+.content--interests_grid-option.selected .interest-icon {
+    opacity: 0.7;
+    color: #008abd;
+}
+
+.btn {
+    padding: 0 25px;
+    background-color: #008abd;
+    color: #fff;
+    font-family: 'Contractica-CAPS';
+    font-size: 20px;
+    text-align: center;
+    border-radius: 50px;
+    cursor: pointer;
+    height: 55px;
+    line-height: 55px;
+    vertical-align: middle;
+    border: solid #008abd 2px;
+}
+
+.content--interests-btn {
+    margin-top: 50px;
+    transition: all 0.3s ease;
+}
+
+.content--interests-btn:disabled {
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+    background: #fff;
+    border: solid #666 2px;
+}
+
+
+/*account*/
+
+.account-page {
+    background: #008abd14
+}
+
+.profile {
+    border: solid #7e7e7e 2px;
+    padding: 20px 80px;
+    border-radius: 20px;
+    box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.22);
+    background: #fff;
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.profile-top {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+.profile-pic-holder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    border: solid #008abd 3px;
+}
+
+.profile-pic-holder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    border-radius: 50%;
+    background: rgba(128, 128, 128, 0.75);
+}
+
+.profile-pic-change-icon {
+    opacity: 0;
+    position: absolute;
+    transition: opacity 0.3s ease;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    color: #008abd;
+    display: flex!important;
+    justify-content: center;
+    align-items: center;
+    font-size: 45px!important;
+}
+
+.profile-pic-holder:hover .profile-pic-change-icon{
+    opacity: 0.7;
+}
+
+.profile-top .user-full-name {
+    font-family: 'Contractica-CAPS';
+    font-size: 35px;
+    margin: 35px 0 0;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: normal;
+    color: #008abd;
+}
+
+.profile-top .user-email {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.profile-bottom-title {
+    font-size: 26px;
+    margin: 50px 0 30px;
+    color: #008abd;
+}
+
+.profile-bottom-interests {
+    display: flex;
+    align-items: center;
+}
+
+.profile-bottom-interests-option {
+    display: block;
+    margin: 0 15px;
+    padding: 20px;
+    width: 200px;
+    background: rgba(0, 0, 0, 0.07);
+    border-radius: 35px;
+    font-size: 20px;
+}
+
+.profile-bottom-interests-option:first-child {
+    margin-left: 0;
+}
+
+.logout-form {
+    margin-top: 120px;
+    text-align: right;
+}
+
+/* media queries */
+
+@media (max-width: 1700px) {
+    .header--interests {
+        max-width: 350px;
+    }
+
+    .header--interests .arrow-dec{
+        right: -145px;
+        width: 260px;
+        height: 260px;
+    }
+}
+
+@media (max-width: 1499px) {
+
+    .content--interests {
+        left: calc(60%);
+    }
+
+    .content--interests_grid {
+        max-width: 900px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        justify-content: space-around;
+    }
+
+    .content--interests_grid-option {
+        width: 250px;
+        height: 250px;
+    }
+
+    .interest-icon {
+        font-size: 120px!important
+    }
+
+    .content--interests-btn {
+        right: 10%;
+    }
+
+    .header--interests .arrow-dec{
+        display: none;
+    }
+}
+
+@media (max-width: 1350px){
+
+    .content--interests {
+        left: calc(55%);
+    }
+
+    .content--interests_grid {
+        max-width: 800px;
+    }
+
+    .header--interests {
+        max-width: 280px;
+    }
+
+    .logo--interests {
+        width: 250px;
+    }
+
+    .content--interests_grid-option {
+        width: 200px;
+        height: 200px;
+    }
+
+    .interest-icon {
+        font-size: 95px!important
+    }
+
+    .content--interests-btn {
+        right: 21%;
+    }
+
+}
+
+
+@media (max-width: 1120px) {
+    .auth {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .auth_content-title {
+        text-align: center;
+        font-size: 40px;
+        line-height: normal;
+        margin-bottom: 20px;
+    }
+
+    .job-header{
+        font-size: 14px;
+    }
+    
+
+    .body--interests::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        z-index: -2;
+    }
+
+    .header--interests {
+        display: none;
+    }
+
+    .content--interests-top {
+        display: block;
+        max-width: 500px;
+        margin: 25px auto;
+        font-size: 21px;
+    }
+
+
+    .body--interests header {
+        display: block;
+    }
+
+    .header_inner--centered img{
+        width: 150px;
+    }
+
+    .content--interests {
+        position: static;
+        transform: none;
+        margin: 40px auto;
+        max-width: 800px;
+    }
+
+    .content--interests_fields-form{
+        align-items: center;
+        margin-top: 55px;
+    }
+
+    .content--interests_grid-option {
+        width: 220px;
+        height: 220px;
+    }
+
+    .content--interests-btn {
+        align-self: end;
+    }
+
+}
+
+@media (max-width: 1000px) {
+
+    .nav_list_item {
+        margin: 10px 0;
+    }
+
+    .search-form {
+        width: 80%;
+    }
+
+    .search-form-input {
+        width: 100%;
+    }
+
+    .job_list_item {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .job_list_item * {
+        width: auto;
+    }
+}
+
+@media (max-width: 970px) {
+    .job-col {
+        text-align: center
+    }
+
+    .job-col.position  {
+        flex: 2;
+    }
+
+    .profile {
+        max-width: 600px;
+    }
+
+    .profile-bottom {
+        text-align: center;
+    }
+
+    .profile-bottom-interests {
+        flex-direction: column;
+    }
+
+    .profile-bottom-interests-option {
+        margin: 15px 0 0 0;
+    }
+
+    .logout-form {
+        text-align: center;
+    }
+}
+
+@media (max-width: 866px) {
+    .job-header {
+        display: none;
+    }
+
+    .job-row {
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 0;
+        position: relative;
+        justify-content: center;
+    }
+
+    .jobs:nth-child(2) {
+        border-top: solid rgba(0, 138, 189, 0.25) 2px;
+    }
+
+    .job-col {
+        flex: 0!important;
+        margin-top: 20px;
+    }
+
+    .job-col.published,
+    .job-col.site,
+    .job-col.end {
+        order: -1;
+        display: inline-block;
+        text-align: center;
+        top: 0;
+        position: absolute;
+    }
+
+    .job-col.site {
+        left: 0;
+    }
+
+    .job-col.published, .job-col.end {
+        right: 0;
+    }
+
+    .job-col.published {
+        right: 80px;
+    }
+
+    .job-col.published:after {
+        content: '/';
+        padding: 5px;
+    }
+
+    .job-col.category {
+        margin-top: 50px;
+    }
+
+    .job-col.position {
+        margin-top: 55px;
+        color: #008abd;
+        padding: 0;
+    }
+
+    .job-col.published,
+    .job-col.end {
+        font-size: 16px;
+        color: #333;
+    }
+
+    .job-col.site img {
+        width: 100px;
+        vertical-align: middle;
+    }
+
+    .body--interests {
+        height: 100%;
+    }
+
+    .content--interests_grid-option {
+        flex: 0 0 35%
+    }
+
+    .content--interests-btn {
+        align-self: center;
+    }
+
+}
+
+@media (max-width: 645px) {
+    .content--interests_grid {
+        gap: 25px;
+    }
+
+    .content--interests_grid-option {
+        flex: auto;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .header_inner--centered {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav_list_item {
+        display: block;
+        margin: 10px 0;
+    }
+
+    .auth {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .auth_form {
+        width: 100%;
+        padding: 30px;
+    }
+
+    .auth_form-input {
+        width: 100%;
+    }
+
+    .profile-layout {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .profile-pic-holder {
+        width: 200px;
+        height: 200px;
+    }
+
+    .content_profile-info {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .content--interests {
+        width: 100%;
+    }
+
+    .content--interests-top {
+        font-size: 20px;
+    }
+}
+
+
+
+@media (max-width: 515px) {
+
+    .header_inner {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav_list {
+        margin-top: 20px;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 485px) {
+  .auth_content-title {
+    font-size: 42px;
+    line-height: 60px;
+  }
+
+  .auth_content-subtext {
+    font-size: 18px;
+  }
+
+  .auth_form-input {
+    height: 50px;
+    font-size: 14px;
+  }
+
+  .content--interests_title {
+    font-size: 28px;
+  }
+
+  .content--interests_subtitle {
+    font-size: 16px;
+  }
+
+  .content--interests_grid-option {
+    width: 100%;
+    height: 180px;
+  }
+
+  .btn {
+    width: 100%;
+    font-size: 18px;
+  }
+
+  .user-email {
+    font-size: 18px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .content_profile-info .user-full-name {
+    font-size: 28px;
+  }
+
+
+}
