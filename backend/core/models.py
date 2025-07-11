@@ -1,27 +1,31 @@
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 
-class Job(models.Model):
-    position = models.CharField(max_length=255)
-    company = models.CharField(max_length=255)
-    position_url = models.URLField(max_length=255)
-    company_url = models.URLField(max_length=255)
-    published_date = models.CharField(null=True, blank=True)
-    end_date = models.CharField(null=True, blank=True)
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, name, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, name=name, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    class Meta:
-        abstract = True
+    def create_superuser(self, email, name, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(email, name, password, **extra_fields)
 
-class HrGe(Job):
-    class Meta:
-        managed = False
-        db_table = 'hr_ge'
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
-class JobsGe(Job):
-    class Meta:
-        managed = False
-        db_table = 'jobs_ge'
+    objects = CustomUserManager()
 
-class MyJobsGe(Job):
-    class Meta:
-        managed = False
-        db_table = 'myjobs_ge'
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
+    def __str__(self):
+        return self.email
