@@ -13,15 +13,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 
-
-
-
-
-
-
-TURSO_URL = os.getenv("TURSO_URL", "https://sqld-davitjibladze.aws-eu-west-1.turso.io")
-TURSO_AUTH_TOKEN = os.getenv("TURSO_AUTH_TOKEN", "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NTIxMzA2OTQsImlkIjoiZTM2Y2RmMmItOWQzZS00MDkxLThkMjAtZTVkNWQwYzllNDJkIiwicmlkIjoiMjE5NDUzMzktYzE2Ny00Y2U2LWI3NzktNGQ3ZjFiYjIyZWQwIn0._g-BofzEf9MjGZ3-rwY2D5pKLBDT3mMeKzvhU8j1EvFv-CclVmNmSjD5oKUy85lXxnLNTIS6vuk0DvujqgHmBg")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

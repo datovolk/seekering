@@ -16,9 +16,6 @@ from urllib.parse import urlparse
 from django.db.models import Q
 from django.core.paginator import Paginator
 import random
-# views.py
-from .turso_client import fetch_jobs
-
 
 
 User = get_user_model()
@@ -48,14 +45,9 @@ def job_list(request):
 
     query = request.GET.get('q', '').strip().lower()
 
-    hr_jobs = fetch_jobs("hr_ge")
-    jobs_ge = fetch_jobs("jobs_ge")
-    myjobs_ge = fetch_jobs("myjobs_ge")
-
-    all_jobs = hr_jobs + jobs_ge + myjobs_ge
-
-    user_interests = [i.name for i in user.interests.all()]
-    filtered_jobs = []
+    hr_jobs = list(HrGe.objects.all())
+    jobs_ge = list(JobsGe.objects.all())
+    myjobs_ge = list(MyJobsGe.objects.all())
 
     icon_map = {
         "hr.ge": "images/src_website_logos/hrge_logo.svg",
@@ -63,8 +55,13 @@ def job_list(request):
         "myjobs.ge": "images/src_website_logos/myjobsge_logo.svg",
     }
 
+    all_jobs = hr_jobs + jobs_ge + myjobs_ge
+
+    user_interests = [i.name for i in user.interests.all()]
+    filtered_jobs = []
+
     for job in all_jobs:
-        domain = urlparse(job["position_url"]).netloc.lower()
+        domain = urlparse(job.position_url).netloc.lower()
 
         if domain.startswith("www."):
             domain = domain[4:]
@@ -72,12 +69,12 @@ def job_list(request):
         source_site = f'https://{domain}'
         source_icon = icon_map.get(domain)
 
-        job["source_site"] = source_site
-        job["source_icon"] = source_icon
+        setattr(job, 'source_site', source_site)
+        setattr(job, 'source_icon', source_icon)
 
-        title = job.get("title") or job.get("position", "")
+        title = getattr(job, 'title', '') or getattr(job, 'position', '')
         category = categorize_job(title)
-        job["category"] = category
+        setattr(job, 'category', category)
 
         if category in user_interests:
             if query:
@@ -86,10 +83,10 @@ def job_list(request):
             else:
                 filtered_jobs.append(job)
 
-    dated = [job for job in filtered_jobs if job["published_date"] is not None]
-    undated = [job for job in filtered_jobs if job["published_date"] is None]
+    dated = [job for job in filtered_jobs if job.published_date is not None]
+    undated = [job for job in filtered_jobs if job.published_date is None]
 
-    dated.sort(key=lambda job: job["published_date"], reverse=True)
+    dated.sort(key=lambda job: job.published_date, reverse=True)
 
     filtered_jobs = dated + undated
 
@@ -101,7 +98,6 @@ def job_list(request):
         'jobs': page_obj.object_list,
         'page_obj': page_obj,
     })
-
 
 
 
